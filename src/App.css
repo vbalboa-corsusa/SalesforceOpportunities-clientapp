@@ -18,7 +18,7 @@
   margin-bottom: 20px;
 }
 
-.toggle-button {
+.button {
   background-color: #0070d2;
   color: white;
   border: none;
@@ -29,7 +29,7 @@
   transition: background-color 0.3s;
 }
 
-.toggle-button:hover {
+.button:hover {
   background-color: #005fb2;
 }
 
@@ -105,4 +105,8 @@
 
 .retry-button:hover {
   background-color: #c82333;
-} 
+}
+
+.controls button {
+  margin-right: 20px; /* Adds space between buttons */
+}

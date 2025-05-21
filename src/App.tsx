@@ -59,10 +59,16 @@ function App() {
         <h1>Oportunidades de Salesforce</h1>
         <div className="controls">
           <button 
-            onClick={() => setShowNewOnly(!showNewOnly)}
-            className="toggle-button"
+            onClick={() => setShowNewOnly(true)}
+            className="button"
           >
-            {showNewOnly ? 'Mostrar Todas' : 'Mostrar Nuevas'}
+            Mostrar Nuevas
+          </button>
+          <button
+          onClick={()=> setShowNewOnly(false)}
+          className="button"
+          >
+            Mostrar Todas
           </button>
         </div>
       </header>
