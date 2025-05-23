@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Opportunity } from './types/Opportunity';
 import './App.css';
+import { Routes, Route, Link } from 'react-router-dom';
+import CreateOpportunity from './views/CreateOpportunity';
 
 // Configuración de la API
-const API_BASE_URL = 'http://localhost:5000';
+export const API_BASE_URL = 'http://localhost:5000';
 
 function App() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
@@ -11,16 +13,20 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [showNewOnly, setShowNewOnly] = useState(false);
 
+  // Obtiene oportunidades solo cuando esta en página de inicio y showNewOnly cambia
   useEffect(() => {
-    fetchOpportunities();
-  }, [showNewOnly]);
+    // Verificar si la ruta actual es la página de inicio antes de obtener datos
+    if (window.location.pathname === '/') {
+      fetchOpportunities();
+    }
+  }, [showNewOnly]); // Depende de showNewOnly
 
   const fetchOpportunities = async () => {
     try {
       setLoading(true);
       const url = `${API_BASE_URL}/api/opportunities${showNewOnly ? '/new' : ''}`;
       console.log('Fetching from URL:', url);
-      
+
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -57,54 +63,64 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Oportunidades de Salesforce</h1>
-        <div className="controls">
-          <button 
-            onClick={() => setShowNewOnly(true)}
-            className="button"
-          >
-            Mostrar Nuevas
-          </button>
-          <button
-          onClick={()=> setShowNewOnly(false)}
-          className="button"
-          >
-            Mostrar Todas
-          </button>
-        </div>
+        <nav>
+          <Link to="/" className="nav-link">Listar Oportunidades</Link>
+          <Link to="/create" className="nav-link">Crear Oportunidad</Link>
+        </nav>
       </header>
 
       <main>
-        {loading && <div className="loading">Cargando...</div>}
-        {error && (
-          <div className="error">
-            <p>{error}</p>
-            <button onClick={fetchOpportunities} className="retry-button">
-              Reintentar
-            </button>
-          </div>
-        )}
-        
-        <div className="opportunities-grid">
-          {opportunities.map((opp) => (
-            <div key={opp.id} className="opportunity-card">
-              <h2>{opp.name}</h2>
-              <div className="opportunity-details">
-                <p><strong>Monto:</strong> ${opp.amount.toLocaleString()}</p>
-                <p><strong>Etapa:</strong> {opp.stageName}</p>
-                <p><strong>Probabilidad:</strong> {opp.probability}%</p>
-                <p><strong>Cuenta:</strong> {opp.accountName}</p>
-                <p><strong>Propietario:</strong> {opp.ownerName}</p>
-                <p><strong>Creado:</strong> {new Date(opp.createdDate).toLocaleDateString()}</p>
-                {opp.description && (
-                  <p><strong>Descripción:</strong> {opp.description}</p>
-                )}
+        <Routes>
+          <Route path="/" element={
+            <>
+              <div className="controls">
+                <button
+                  onClick={() => setShowNewOnly(false)}
+                  className="button"
+                >
+                  Mostrar Todas
+                </button>
+                <button
+                  onClick={() => setShowNewOnly(true)}
+                  className="button"
+                >
+                  Mostrar Nuevas
+                </button>
               </div>
-            </div>
-          ))}
-        </div>
+              {loading && <div className="loading">Cargando...</div>}
+              {error && (
+                <div className="error">
+                  <p>{error}</p>
+                  <button onClick={fetchOpportunities} className="retry-button">
+                    Reintentar
+                  </button>
+                </div>
+              )}
+              <div className="opportunities-grid">
+                {opportunities.map((opp) => (
+                  <div key={opp.id} className="opportunity-card">
+                    <h2>{opp.name}</h2>
+                    <div className="opportunity-details">
+                      <p><strong>Monto:</strong> ${opp.amount.toLocaleString()}</p>
+                      <p><strong>Etapa:</strong> {opp.stageName}</p>
+                      <p><strong>Probabilidad:</strong> {opp.probability}%</p>
+                      <p><strong>Cuenta:</strong> {opp.accountName}</p>
+                      <p><strong>Propietario:</strong> {opp.ownerName}</p>
+                      <p><strong>Creado:</strong> {new Date(opp.createdDate).toLocaleDateString()}</p>
+                      {opp.description && (
+                        <p><strong>Descripción:</strong> {opp.description}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          } />
+          <Route path="/create" element={<CreateOpportunity />} />
+        </Routes>
       </main>
     </div>
   );
 }
 
-export default App; 
+export default App;
